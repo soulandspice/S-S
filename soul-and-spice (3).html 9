@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soul & Spice — Nigerian Kitchen</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --gold: #C8860A;
+    --gold-light: #F5C842;
+    --deep-red: #8B1A1A;
+    --cream: #FDF6EC;
+    --brown: #3E1F00;
+    --orange: #E05C1A;
+    --bg-dark: #1A0A00;
+    --text-muted: #A08060;
+    --success: #2e7d32;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--brown); overflow-x: hidden; }
+
+  /* ─── AUTH GATE ─── */
+  #authGate {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--bg-dark);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    overflow-y: auto;
+  }
+  #authGate.show { display: flex; }
+
+  .auth-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    background-image: repeating-linear-gradient(45deg,#C8860A 0px,#C8860A 1px,transparent 1px,transparent 28px),
+      repeating-linear-gradient(-45deg,#C8860A 0px,#C8860A 1px,transparent 1px,transparent 28px);
+  }
+
+  .auth-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(200,134,10,0.2) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 100%, rgba(224,92,26,0.15) 0%, transparent 60%);
+  }
+
+  .auth-card {
+    background: var(--cream);
+    border-radius: 16px;
+    padding: 2.5rem;
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    animation: authSlideIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  @keyframes authSlideIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .auth-logo {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  .auth-logo-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--brown);
+    line-height: 1;
+  }
+  .auth-logo-name span { color: var(--gold); font-style: italic; }
+  .auth-logo-tagline {
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+  }
+
+  .auth-tabs {
+    display: flex;
+    background: rgba(200,134,10,0.08);
+    border-radius: 8px;
+    padding: 4px;
+    margin-bottom: 1.8rem;
+  }
+  .auth-tab {
+    flex: 1;
+    padding: 0.6rem;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-muted);
+    border: none;
+    background: none;
+  }
+  .auth-tab.active {
+    background: var(--gold);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(200,134,10,0.35);
+  }
+
+  .auth-panel { display: none; }
+  .auth-panel.active { display: block; }
+
+  .auth-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--brown);
+    margin-bottom: 0.25rem;
+  }
+  .auth-sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+  }
+
+  .auth-field { margin-bottom: 1rem; }
+  .auth-field label {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+  }
+  .auth-field input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1.5px solid rgba(200,134,10,0.25);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--brown);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .auth-field input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(200,134,10,0.12);
+  }
+  .auth-field input.error { border-color: var(--deep-red); }
+  .auth-field .err-msg {
+    font-size: 0.73rem;
+    color: var(--deep-red);
+    margin-top: 0.3rem;
+    display: none;
+  }
+  .auth-field .err-msg.show { display: block; }
+
+  .auth-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: var(--gold);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    margin-top: 0.5rem;
+  }
+  .auth-btn:hover {
+    background: #b07308;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(200,134,10,0.3);
+  }
+  .auth-btn:active { transform: translateY(0); }
+
+  .auth-divider { height: 1px; background: rgba(200,134,10,0.15); margin: 1.5rem 0; }
+
+  .auth-alert {
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-size: 0.83rem;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  .auth-alert.error { background: #fff0f0; border: 1px solid rgba(139,26,26,0.25); color: var(--deep-red); display: block; }
+  .auth-alert.success { background: #f0fff4; border: 1px solid rgba(46,125,50,0.25); color: var(--success); display: block; }
+
+  /* ─── NAVBAR ─── */
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+    background: rgba(26,10,0,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(200,134,10,0.2);
+  }
+  .nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--cream);
+  }
+  .nav-brand span { color: var(--gold-light); font-style: italic; }
+  .nav-right { display: flex; align-items: center; gap: 0.75rem; }
+
+  .nav-user-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(200,134,10,0.15);
+    border: 1px solid rgba(200,134,10,0.3);
+    border-radius: 50px;
+    padding: 0.45rem 1rem 0.45rem 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    color: var(--cream);
+    font-size: 0.82rem;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-user-btn:hover { background: rgba(200,134,10,0.25); }
+  .nav-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--bg-dark);
+    flex-shrink: 0;
+  }
+
+  .nav-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 2rem;
+    background: var(--cream);
+    border-radius: 10px;
+    box-shadow: 0 8px 32px rgba(26,10,0,0.25);
+    border: 1px solid rgba(200,134,10,0.2);
+    min-width: 200px;
+    overflow: hidden;
+    display: none;
+    animation: dropDown 0.2s ease;
+  }
+  .nav-dropdown.open { display: block; }
+  @keyframes dropDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .dropdown-header {
+    padding: 1rem 1.2rem 0.75rem;
+    border-bottom: 1px solid rgba(200,134,10,0.15);
+  }
+  .dropdown-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--brown);
+  }
+  .dropdown-email {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1.2rem;
+    font-size: 0.85rem;
+    color: var(--brown);
+    cursor: pointer;
+    transition: background 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .dropdown-item:hover { background: rgba(200,134,10,0.07); }
+  .dropdown-item.danger { color: var(--deep-red); }
+  .dropdown-item .di-icon { width: 16px; text-align: center; flex-shrink: 0; }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    background: var(--bg-dark);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%,rgba(200,134,10,0.25) 0%,transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 100%,rgba(224,92,26,0.2) 0%,transparent 60%);
+  }
+  .hero-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    background-image: repeating-linear-gradient(45deg,#C8860A 0px,#C8860A 1px,transparent 1px,transparent 30px),
+      repeating-linear-gradient(-45deg,#C8860A 0px,#C8860A 1px,transparent 1px,transparent 30px);
+  }
+  .tagline-top {
+    font-size: 0.75rem;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    position: relative;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem,10vw,7rem);
+    font-weight: 900;
+    line-height: 0.95;
+    color: var(--cream);
+    position: relative;
+    animation: fadeUp 0.9s 0.15s ease both;
+  }
+  .hero-title span { color: var(--gold-light); font-style: italic; }
+  .hero-sub {
+    font-size: 1rem;
+    color: rgba(253,246,236,0.6);
+    margin-top: 1.5rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    position: relative;
+    animation: fadeUp 1s 0.3s ease both;
+  }
+  .hero-motto {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--gold-light);
+    margin-top: 0.6rem;
+    letter-spacing: 0.08em;
+    position: relative;
+    animation: fadeUp 1s 0.38s ease both;
+  }
+  .hero-divider {
+    width: 60px;
+    height: 2px;
+    background: var(--gold);
+    margin: 2rem auto;
+    position: relative;
+    animation: fadeUp 1s 0.4s ease both;
+  }
+  .hero-cta {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--bg-dark);
+    font-weight: 500;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 1rem 2.5rem;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.2s;
+    position: relative;
+    animation: fadeUp 1s 0.5s ease both;
+  }
+  .hero-cta:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+  /* ─── ABOUT STRIP ─── */
+  .about-strip {
+    background: var(--deep-red);
+    padding: 1.5rem 2rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .about-strip p { color: rgba(253,246,236,0.85); font-size: 0.85rem; letter-spacing: 0.08em; font-weight: 300; }
+  .about-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+  /* ─── HOURS ─── */
+  .hours-section { background: var(--brown); padding: 3rem 2rem; text-align: center; }
+  .hours-inner { max-width: 480px; margin: 0 auto; }
+  .hours-section .section-label { color: var(--gold); }
+  .hours-section .section-title { color: var(--cream); }
+  .hours-grid { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 2rem; }
+  .hours-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85rem 1.2rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(200,134,10,0.2);
+  }
+  .hours-row.highlight { border-color: var(--gold); background: rgba(200,134,10,0.1); }
+  .hours-day { font-size: 0.85rem; color: rgba(253,246,236,0.7); font-weight: 400; letter-spacing: 0.05em; }
+  .hours-time { font-family: 'Playfair Display', serif; font-size: 0.95rem; color: var(--gold-light); font-weight: 700; }
+
+  /* ─── SECTION STYLES ─── */
+  .section-label { font-size: 0.7rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--gold); font-weight: 500; margin-bottom: 0.75rem; text-align: center; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem,5vw,3.2rem); font-weight: 700; text-align: center; color: var(--brown); margin-bottom: 0.5rem; }
+  .section-title em { color: var(--deep-red); font-style: italic; }
+  .section-divider { width: 50px; height: 2px; background: var(--gold); margin: 1.5rem auto 3.5rem; }
+
+  /* ─── MENU ─── */
+  .menu-section { max-width: 900px; margin: 0 auto; padding: 5rem 2rem; }
+  .menu-category { margin-bottom: 3rem; }
+  .cat-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 500;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(200,134,10,0.2);
+    margin-bottom: 1rem;
+  }
+  .menu-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 1.1rem 1.4rem;
+    margin-bottom: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid rgba(200,134,10,0.12);
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+    gap: 1rem;
+  }
+  .menu-item:hover { border-color: var(--gold); background: #fffbf5; transform: translateX(4px); box-shadow: 3px 3px 12px rgba(200,134,10,0.1); }
+  .menu-item.selected { border-color: var(--deep-red); background: #fff5f5; box-shadow: 0 0 0 2px rgba(139,26,26,0.15); }
+  .item-left { display: flex; align-items: center; gap: 1rem; flex: 1; }
+  .item-check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(200,134,10,0.35);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .menu-item.selected .item-check { background: var(--deep-red); border-color: var(--deep-red); }
+  .item-check svg { display: none; }
+  .menu-item.selected .item-check svg { display: block; }
+  .item-info { flex: 1; }
+  .item-name { font-size: 0.95rem; font-weight: 500; color: var(--brown); line-height: 1.4; }
+  .item-price { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; color: var(--deep-red); flex-shrink: 0; }
+  .item-price span { font-size: 0.7rem; font-family: 'DM Sans', sans-serif; color: var(--text-muted); font-weight: 400; display: block; text-align: right; }
+  .qty-wrap { display: none; align-items: center; gap: 8px; flex-shrink: 0; }
+  .menu-item.selected .qty-wrap { display: flex; }
+  .qty-btn { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--deep-red); background: none; color: var(--deep-red); font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s; font-weight: 500; }
+  .qty-btn:hover { background: var(--deep-red); color: #fff; }
+  .qty-num { font-size: 0.9rem; font-weight: 500; min-width: 16px; text-align: center; color: var(--brown); }
+
+  /* ─── ORDER BAR ─── */
+  .order-summary {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg-dark);
+    border-top: 2px solid var(--gold);
+    padding: 1.25rem 2rem;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    z-index: 100;
+    animation: slideUp 0.3s ease;
+  }
+  .order-summary.visible { display: flex; }
+  .order-info { color: var(--cream); }
+  .order-count { font-size: 0.75rem; letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 2px; }
+  .order-total { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--cream); }
+  .order-total small { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: var(--text-muted); font-style: normal; }
+  .whatsapp-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: #25D366;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .whatsapp-btn:hover { background: #1ebe5a; transform: translateY(-1px); }
+  .whatsapp-btn svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,10,0,0.85);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--cream);
+    border-radius: 10px;
+    padding: 2rem;
+    max-width: 440px;
+    width: 100%;
+    position: relative;
+    animation: slideUp 0.3s ease;
+  }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; font-size: 1.4rem; color: var(--text-muted); cursor: pointer; line-height: 1; }
+  .modal-close:hover { color: var(--deep-red); }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--brown); margin-bottom: 0.3rem; }
+  .modal-sub { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+  .field-group { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+  .field-label { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); font-weight: 500; margin-bottom: 0.35rem; }
+  .field-input { width: 100%; padding: 0.75rem 1rem; border: 1.5px solid rgba(200,134,10,0.25); border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--brown); background: #fff; outline: none; transition: border-color 0.2s; }
+  .field-input:focus { border-color: var(--gold); }
+  .field-input.error { border-color: var(--deep-red); }
+  .field-error { font-size: 0.75rem; color: var(--deep-red); margin-top: 0.3rem; display: none; }
+  .modal-confirm-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: #25D366;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.95rem 2rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .modal-confirm-btn:hover { background: #1ebe5a; transform: translateY(-1px); }
+  .modal-confirm-btn svg { width: 20px; height: 20px; fill: #fff; flex-shrink: 0; }
+  .modal-order-preview { background: #fff; border-radius: 6px; padding: 0.9rem 1rem; border: 1px solid rgba(200,134,10,0.2); margin-bottom: 1.2rem; font-size: 0.82rem; color: var(--text-muted); max-height: 120px; overflow-y: auto; }
+  .modal-order-preview p { margin-bottom: 0.3rem; line-height: 1.5; }
+  .modal-order-preview .preview-total { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--deep-red); font-weight: 700; margin-top: 0.5rem; }
+
+  /* ─── ORDER HISTORY MODAL ─── */
+  .history-modal-box {
+    background: var(--cream);
+    border-radius: 14px;
+    padding: 2rem;
+    max-width: 520px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease;
+  }
+  .history-empty { text-align: center; padding: 2rem; color: var(--text-muted); font-style: italic; }
+  .history-order-item {
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid rgba(200,134,10,0.15);
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.75rem;
+  }
+  .history-order-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+  .history-order-date { font-size: 0.75rem; color: var(--text-muted); }
+  .history-order-total { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--deep-red); font-weight: 700; }
+  .history-order-lines { font-size: 0.82rem; color: var(--text-muted); line-height: 1.7; }
+
+  /* ─── BANK TRANSFER BUTTON ─── */
+  .pay-transfer-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: var(--gold);
+    color: var(--bg-dark);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.95rem 2rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    width: 100%;
+    letter-spacing: 0.03em;
+  }
+  .pay-transfer-btn:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+  .payment-divider {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.75rem 0;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+  }
+  .payment-divider::before, .payment-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(200,134,10,0.2);
+  }
+
+  /* ─── BANK TRANSFER MODAL ─── */
+  .bank-modal-box {
+    background: var(--cream);
+    border-radius: 14px;
+    padding: 2rem;
+    max-width: 440px;
+    width: 100%;
+    position: relative;
+    animation: slideUp 0.3s ease;
+  }
+
+  .bank-card {
+    background: linear-gradient(135deg, var(--brown), #2a1200);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.2rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .bank-card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(200,134,10,0.15);
+  }
+  .bank-card::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: -20px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(200,134,10,0.1);
+  }
+  .bank-name-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(245,200,66,0.6);
+    margin-bottom: 0.25rem;
+  }
+  .bank-account-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+  .bank-number-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .bank-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: 0.08em;
+    position: relative;
+    z-index: 1;
+  }
+  .copy-btn {
+    background: rgba(200,134,10,0.25);
+    border: 1px solid rgba(200,134,10,0.4);
+    color: var(--gold-light);
+    border-radius: 6px;
+    padding: 0.4rem 0.9rem;
+    font-size: 0.78rem;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .copy-btn:hover { background: rgba(200,134,10,0.4); }
+  .bank-label-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    position: relative;
+    z-index: 1;
+  }
+  .bank-badge {
+    background: rgba(200,134,10,0.2);
+    border: 1px solid rgba(200,134,10,0.35);
+    color: var(--gold-light);
+    border-radius: 50px;
+    padding: 0.25rem 0.8rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .transfer-steps {
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid rgba(200,134,10,0.15);
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.2rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 2;
+  }
+  .transfer-steps p { margin: 0; }
+  .transfer-steps strong { color: var(--brown); }
+
+  .transfer-total-line {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--deep-red);
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .confirm-transfer-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: #25D366;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.95rem 2rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .confirm-transfer-btn:hover { background: #1ebe5a; transform: translateY(-1px); }
+
+  /* ─── FOOTER ─── */
+  footer { background: var(--bg-dark); padding: 3rem 2rem; text-align: center; }
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--gold-light); font-weight: 700; margin-bottom: 0.5rem; }
+  footer p { color: rgba(253,246,236,0.35); font-size: 0.8rem; margin-top: 0.5rem; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ─── LOGGED-IN GREETING BANNER ─── */
+  .welcome-banner {
+    background: linear-gradient(135deg, var(--deep-red), #6b1010);
+    padding: 0.75rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    display: none;
+  }
+  .welcome-banner.show { display: flex; }
+  .welcome-banner p { color: rgba(253,246,236,0.9); font-size: 0.82rem; }
+  .welcome-banner strong { color: var(--gold-light); }
+
+  @media (max-width: 600px) {
+    .menu-item { padding: 1rem; }
+    .order-summary { padding: 1rem; }
+    .modal-box, .history-modal-box { padding: 1.5rem; }
+    .auth-card { padding: 1.75rem; }
+    .navbar { padding: 0.85rem 1rem; }
+    .nav-dropdown { right: 1rem; }
+  }
+
+  /* ─── FORGOT PASSWORD ─── */
+  .forgot-link {
+    display: block;
+    text-align: right;
+    font-size: 0.78rem;
+    color: var(--gold);
+    cursor: pointer;
+    margin-top: -0.4rem;
+    margin-bottom: 0.8rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s;
+  }
+  .forgot-link:hover { color: #b07308; }
+
+  .reset-code-box {
+    background: rgba(200,134,10,0.08);
+    border: 1.5px dashed rgba(200,134,10,0.4);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    display: none;
+  }
+  .reset-code-box.show { display: block; }
+  .reset-code-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+  }
+  .reset-code-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 0.18em;
+  }
+  .reset-code-note {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 0.3rem;
+  }
+
+  .back-to-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    margin-bottom: 1.2rem;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .back-to-login:hover { color: var(--brown); }
+</style>
+</head>
+<body>
+
+<!-- ─── NAVBAR ─── -->
+<nav class="navbar" id="navbar">
+  <div class="nav-brand">Soul &amp; <span>Spice</span></div>
+  <div class="nav-right">
+    <a href="#menu" style="color:var(--gold-light);font-size:0.85rem;letter-spacing:0.08em;text-decoration:none;font-weight:500;">View Menu ↓</a>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="hero-pattern"></div>
+  <p class="tagline-top">Authentic Nigerian Flavours</p>
+  <h1 class="hero-title">Soul &amp; <span>Spice</span></h1>
+  <p class="hero-sub">Handcrafted meals made with love, spice, and tradition</p>
+  <p class="hero-motto">Built for your Appetite</p>
+  <div class="hero-divider"></div>
+  <a href="#menu" class="hero-cta">View Our Menu</a>
+</section>
+
+<!-- ─── ABOUT STRIP ─── -->
+<div class="about-strip">
+  <p>🍛 Freshly Prepared Daily</p>
+  <div class="about-dot"></div>
+  <p>📍 Anambra State University, Uli Campus</p>
+  <div class="about-dot"></div>
+  <p>💳 Pay Online with Paystack</p>
+</div>
+
+<!-- ─── OPENING HOURS ─── -->
+<div class="hours-section">
+  <div class="hours-inner">
+    <p class="section-label">We Are Open</p>
+    <h2 class="section-title" style="font-size:1.8rem;">Opening Hours</h2>
+    <div class="section-divider" style="margin-bottom:0;"></div>
+    <div class="hours-grid">
+      <div class="hours-row highlight">
+        <span class="hours-day">Monday – Saturday</span>
+        <span class="hours-time">8:00 AM – 10:00 PM</span>
+      </div>
+      <div class="hours-row">
+        <span class="hours-day">Sunday</span>
+        <span class="hours-time">5:00 PM – 10:00 PM</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MENU ─── -->
+<section class="menu-section" id="menu">
+  <p class="section-label">Our Menu</p>
+  <h2 class="section-title">What We're <em>Cooking Today</em></h2>
+  <div class="section-divider"></div>
+
+  <div class="menu-category">
+    <p class="cat-label">🍚 Rice & Sides</p>
+    <div class="menu-item" data-id="1" data-name="Jollof Rice & Beef with Plantain" data-price="2500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Jollof Rice &amp; Beef with Plantain</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦2,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="2" data-name="Jollof Rice & Chicken" data-price="4000">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Jollof Rice &amp; Chicken</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦4,000<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="3" data-name="Jollof Rice & Chicken with Plantain" data-price="4500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Jollof Rice &amp; Chicken with Plantain</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦4,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="4" data-name="Fried Rice & Chicken" data-price="4500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Fried Rice &amp; Chicken</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦4,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="5" data-name="Fried Rice & Beef" data-price="3000">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Fried Rice &amp; Beef</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦3,000<span>per plate</span></div>
+    </div>
+  </div>
+
+  <div class="menu-category">
+    <p class="cat-label">🍝 Spaghetti</p>
+    <div class="menu-item" data-id="6" data-name="Stir Fry Spaghetti with Chicken" data-price="5000">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Stir Fry Spaghetti with Chicken</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦5,000<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="7" data-name="Stir Fry Spaghetti with Beef" data-price="3000">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Stir Fry Spaghetti with Beef</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦3,000<span>per plate</span></div>
+    </div>
+  </div>
+
+  <div class="menu-category">
+    <p class="cat-label">🥘 Specials</p>
+    <div class="menu-item" data-id="8" data-name="Mishai Regular" data-price="2500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Mishai Regular</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦2,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="9" data-name="Mishai Exclusive" data-price="3500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Mishai Exclusive</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦3,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="10" data-name="Peppered Gizzard — Small Plate" data-price="1500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Peppered Gizzard — Small Plate</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦1,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="11" data-name="Peppered Gizzard — Big Plate" data-price="2500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Peppered Gizzard — Big Plate</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦2,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="12" data-name="Peppered Kpomo — Small Plate" data-price="1500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Peppered Kpomo — Small Plate</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦1,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="13" data-name="Peppered Kpomo — Big Plate" data-price="2500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Peppered Kpomo — Big Plate</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦2,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="14" data-name="Salad" data-price="700">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Salad</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦700<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="15" data-name="Plantain" data-price="1000">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Plantain</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦1,000<span>per plate</span></div>
+    </div>
+  </div>
+
+  <div class="menu-category">
+    <p class="cat-label">🍲 Soups & Swallow (Fufu / Garri)</p>
+    <div class="menu-item" data-id="16" data-name="Egusi Soup & Beef with Fufu/Garri" data-price="2500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Egusi Soup &amp; Beef with Fufu/Garri</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦2,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="17" data-name="Egusi Soup & Chicken with Fufu/Garri" data-price="3500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Egusi Soup &amp; Chicken with Fufu/Garri</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦3,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="18" data-name="Vegetable Soup & Beef with Fufu/Garri" data-price="3000">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Vegetable Soup &amp; Beef with Fufu/Garri</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦3,000<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="19" data-name="Vegetable Soup & Chicken with Fufu/Garri" data-price="4000">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Vegetable Soup &amp; Chicken with Fufu/Garri</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦4,000<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="20" data-name="Okra Soup & Beef with Fufu/Garri" data-price="2500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Okra Soup &amp; Beef with Fufu/Garri</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦2,500<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="21" data-name="Okra Soup & Chicken with Fufu/Garri" data-price="3500">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Okra Soup &amp; Chicken with Fufu/Garri</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦3,500<span>per plate</span></div>
+    </div>
+  </div>
+
+  <div class="menu-category">
+    <p class="cat-label">🍛 Stew & White Rice</p>
+    <div class="menu-item" data-id="22" data-name="Carrot Stew Sauce & Beef with White Rice" data-price="2800">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Carrot Stew Sauce &amp; Beef with White Rice</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦2,800<span>per plate</span></div>
+    </div>
+    <div class="menu-item" data-id="23" data-name="Carrot Stew Sauce & Chicken with White Rice" data-price="4700">
+      <div class="item-left"><div class="item-check"><svg viewBox="0 0 10 8" width="10" height="10" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="item-info"><p class="item-name">Carrot Stew Sauce &amp; Chicken with White Rice</p></div></div>
+      <div class="qty-wrap"><button class="qty-btn minus">−</button><span class="qty-num">1</span><button class="qty-btn plus">+</button></div>
+      <div class="item-price">₦4,700<span>per plate</span></div>
+    </div>
+  </div>
+
+  <!-- PRE-ORDER -->
+  <div class="menu-category">
+    <p class="cat-label">📦 Pre-Order Only</p>
+    <div style="padding: 1.4rem; background: #fff8ee; border: 1.5px dashed rgba(200,134,10,0.4); border-radius: 8px; text-align: center;">
+      <p style="font-family: 'Playfair Display', serif; font-size: 1.05rem; color: var(--brown); font-weight: 700; margin-bottom: 0.4rem;">🍲 Soup in Litres</p>
+      <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">Available on <strong>pre-order only</strong>. Contact us on WhatsApp to arrange your order in advance.</p>
+      <a href="https://wa.me/2349123264034?text=Hello%20Soul%20%26%20Spice!%20I%27d%20like%20to%20pre-order%20soup%20in%20litres." target="_blank" style="display: inline-block; margin-top: 1rem; background: #25D366; color: #fff; font-size: 0.85rem; font-weight: 500; padding: 0.6rem 1.5rem; border-radius: 4px; text-decoration: none; letter-spacing: 0.05em;">Chat Us on WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─── STICKY ORDER BAR ─── -->
+<div class="order-summary" id="orderBar">
+  <div class="order-info">
+    <p class="order-count" id="orderCount">0 items selected</p>
+    <p class="order-total">₦<span id="orderTotal">0</span> <small>total</small></p>
+  </div>
+  <button class="whatsapp-btn" id="waBtn" onclick="openOrderModal()">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    Order on WhatsApp
+  </button>
+</div>
+
+<!-- ─── ORDER MODAL ─── -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeOrderModal()">✕</button>
+    <p class="modal-title">Almost there! 🎉</p>
+    <p class="modal-sub">Review your order and confirm delivery details.</p>
+    <div class="modal-order-preview" id="orderPreview"></div>
+    <div class="field-group">
+      <div>
+        <p class="field-label">Full Name</p>
+        <input class="field-input" id="custName" type="text" placeholder="e.g. Chukwuemeka Obi" autocomplete="name" />
+        <p class="field-error" id="nameErr">Please enter your name.</p>
+      </div>
+      <div>
+        <p class="field-label">Phone Number</p>
+        <input class="field-input" id="custPhone" type="tel" placeholder="e.g. 08012345678" autocomplete="tel" />
+        <p class="field-error" id="phoneErr">Please enter a valid phone number.</p>
+      </div>
+      <div>
+        <p class="field-label">Delivery Address</p>
+        <input class="field-input" id="custAddress" type="text" placeholder="e.g. Block C, Hall 3, Uli Campus" autocomplete="street-address" />
+        <p class="field-error" id="addressErr">Please enter your delivery address.</p>
+      </div>
+    </div>
+    <button class="pay-transfer-btn" onclick="showBankTransfer()">
+      💳 Pay via Bank Transfer
+    </button>
+
+    <div class="payment-divider">or</div>
+
+    <button class="modal-confirm-btn" onclick="confirmOrder()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Order via WhatsApp (Pay on Delivery)
+    </button>
+  </div>
+</div>
+
+<!-- ─── BANK TRANSFER MODAL ─── -->
+<div class="modal-overlay" id="bankModal">
+  <div class="bank-modal-box">
+    <button class="modal-close" onclick="closeBankModal()">✕</button>
+    <p class="modal-title">Bank Transfer 💳</p>
+    <p class="modal-sub">Send the exact amount to the account below, then notify us on WhatsApp.</p>
+
+    <div class="bank-card">
+      <p class="bank-name-label">Account Name</p>
+      <p class="bank-account-name">ARINZE ONYINYECHI MARYANN</p>
+      <div class="bank-number-row">
+        <span class="bank-number">9123264034</span>
+        <button class="copy-btn" onclick="copyAccountNumber()">📋 Copy</button>
+      </div>
+      <div class="bank-label-row">
+        <span class="bank-badge">OPay Bank</span>
+      </div>
+    </div>
+
+    <div class="transfer-total-line" id="bankTotalLine">Transfer: ₦0</div>
+
+    <div class="transfer-steps">
+      <p>1️⃣ <strong>Transfer the exact amount</strong> shown above</p>
+      <p>2️⃣ <strong>Screenshot your receipt</strong> after transfer</p>
+      <p>3️⃣ <strong>Click the button below</strong> to send your order + proof of payment via WhatsApp</p>
+    </div>
+
+    <button class="confirm-transfer-btn" onclick="confirmTransferOrder()">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      I've Paid — Send Order on WhatsApp
+    </button>
+  </div>
+</div>
+
+<!-- ─── ORDER HISTORY MODAL ─── -->
+<div class="modal-overlay" id="historyModal">
+  <div class="history-modal-box">
+    <button class="modal-close" onclick="closeHistoryModal()">✕</button>
+    <p class="modal-title" style="margin-bottom:0.3rem;">📋 My Orders</p>
+    <p class="modal-sub">Your past orders at Soul &amp; Spice</p>
+    <div id="historyContent"></div>
+  </div>
+</div>
+
+<!-- ─── PROFILE EDIT MODAL ─── -->
+<div class="modal-overlay" id="profileModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeProfileModal()">✕</button>
+    <p class="modal-title">Edit Profile ✏️</p>
+    <p class="modal-sub">Update your account details below.</p>
+    <div id="profileAlert" class="auth-alert"></div>
+    <div class="field-group">
+      <div>
+        <p class="field-label">Full Name</p>
+        <input class="field-input" id="editName" type="text">
+      </div>
+      <div>
+        <p class="field-label">Phone Number</p>
+        <input class="field-input" id="editPhone" type="tel">
+      </div>
+      <div>
+        <p class="field-label">Default Delivery Address</p>
+        <input class="field-input" id="editAddress" type="text">
+      </div>
+    </div>
+    <button class="auth-btn" onclick="saveProfile()">Save Changes</button>
+  </div>
+</div>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-logo">Soul &amp; Spice</div>
+  <p>Authentic Nigerian Kitchen — Anambra State University, Uli Campus</p>
+  <p style="margin-top: 0.75rem;">📲 09123264034</p>
+</footer>
+
+<script>
+  const PHONE = '2349123264034';
+  const cart = {};
+
+  // ─── STORAGE HELPERS ───
+  function getUsers() { try { return JSON.parse(localStorage.getItem('ss_users') || '{}'); } catch(e) { return {}; } }
+  function saveUsers(u) { localStorage.setItem('ss_users', JSON.stringify(u)); }
+  function getCurrentUser() { try { return JSON.parse(localStorage.getItem('ss_current') || 'null'); } catch(e) { return null; } }
+  function setCurrentUser(u) { localStorage.setItem('ss_current', JSON.stringify(u)); }
+  function clearCurrentUser() { localStorage.removeItem('ss_current'); }
+
+  function getUserOrders(email) {
+    try { return JSON.parse(localStorage.getItem('ss_orders_' + email) || '[]'); } catch(e) { return []; }
+  }
+  function saveUserOrder(email, order) {
+    const orders = getUserOrders(email);
+    orders.unshift(order);
+    localStorage.setItem('ss_orders_' + email, JSON.stringify(orders));
+  }
+
+  // ─── AUTH TABS ───
+  function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+    if (tab === 'login') {
+      document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
+      document.getElementById('loginPanel').classList.add('active');
+    } else if (tab === 'signup') {
+      document.querySelector('.auth-tab:nth-child(2)').classList.add('active');
+      document.getElementById('signupPanel').classList.add('active');
+    } else if (tab === 'reset') {
+      // No tab highlighted for reset — it's a sub-flow of login
+      document.getElementById('resetPanel').classList.add('active');
+      // Reset state
+      document.getElementById('resetStep1').style.display = 'block';
+      document.getElementById('resetStep2').style.display = 'none';
+      document.getElementById('resetEmail').value = '';
+      document.getElementById('resetCodeInput').value = '';
+      document.getElementById('resetNewPass').value = '';
+      document.getElementById('resetConfirmPass').value = '';
+      document.getElementById('resetAlert').className = 'auth-alert';
+      ['resetEmailErr','resetCodeErr','resetNewPassErr','resetConfirmPassErr'].forEach(id => {
+        document.getElementById(id).classList.remove('show');
+        const inp = document.getElementById(id.replace('Err','').replace('reset','reset'));
+        if (inp) inp.classList.remove('error');
+      });
+    }
+  }
+
+  // ─── RESET PASSWORD ───
+  let _resetCode = '';
+  let _resetEmail = '';
+
+  function doSendResetCode() {
+    const email = document.getElementById('resetEmail').value.trim().toLowerCase();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    document.getElementById('resetEmail').classList.toggle('error', !emailOk);
+    document.getElementById('resetEmailErr').classList.toggle('show', !emailOk);
+    if (!emailOk) return;
+
+    const users = getUsers();
+    const alertEl = document.getElementById('resetAlert');
+    alertEl.className = 'auth-alert';
+
+    if (!users[email]) {
+      alertEl.textContent = 'No account found with that email address.';
+      alertEl.className = 'auth-alert error';
+      return;
+    }
+
+    // Generate a 6-digit code
+    _resetCode  = String(Math.floor(100000 + Math.random() * 900000));
+    _resetEmail = email;
+
+    document.getElementById('resetCodeValue').textContent = _resetCode;
+    document.getElementById('resetStep1').style.display = 'none';
+    document.getElementById('resetStep2').style.display = 'block';
+  }
+
+  function doResetPassword() {
+    const code    = document.getElementById('resetCodeInput').value.trim();
+    const newPass = document.getElementById('resetNewPass').value;
+    const confirm = document.getElementById('resetConfirmPass').value;
+    let valid = true;
+
+    const codeOk = code === _resetCode;
+    document.getElementById('resetCodeInput').classList.toggle('error', !codeOk);
+    document.getElementById('resetCodeErr').classList.toggle('show', !codeOk);
+    if (!codeOk) valid = false;
+
+    const passOk = newPass.length >= 6;
+    document.getElementById('resetNewPass').classList.toggle('error', !passOk);
+    document.getElementById('resetNewPassErr').classList.toggle('show', !passOk);
+    if (!passOk) valid = false;
+
+    const matchOk = newPass === confirm;
+    document.getElementById('resetConfirmPass').classList.toggle('error', !matchOk);
+    document.getElementById('resetConfirmPassErr').classList.toggle('show', !matchOk);
+    if (!matchOk) valid = false;
+
+    if (!valid) return;
+
+    // Update password in storage
+    const users = getUsers();
+    if (users[_resetEmail]) {
+      users[_resetEmail].password = btoa(newPass);
+      saveUsers(users);
+    }
+
+    const alertEl = document.getElementById('resetAlert');
+    alertEl.textContent = '✓ Password updated! You can now sign in.';
+    alertEl.className = 'auth-alert success';
+
+    // Clear state
+    _resetCode = '';
+    _resetEmail = '';
+
+    setTimeout(() => switchAuthTab('login'), 1800);
+  }
+
+  // ─── SIGNUP ───
+  function doSignup() {
+    const name    = document.getElementById('signupName').value.trim();
+    const phone   = document.getElementById('signupPhone').value.trim();
+    const email   = document.getElementById('signupEmail').value.trim().toLowerCase();
+    const pass    = document.getElementById('signupPassword').value;
+    const address = document.getElementById('signupAddress').value.trim();
+    let valid = true;
+
+    const fields = [
+      ['signupName',    'signupNameErr',  name,  n => n.length >= 2],
+      ['signupPhone',   'signupPhoneErr', phone, p => p.length >= 7],
+      ['signupEmail',   'signupEmailErr', email, e => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)],
+      ['signupPassword','signupPassErr',  pass,  p => p.length >= 6],
+      ['signupAddress', 'signupAddrErr',  address, a => a.length >= 3],
+    ];
+    fields.forEach(([id, errId, val, test]) => {
+      const ok = test(val);
+      document.getElementById(id).classList.toggle('error', !ok);
+      document.getElementById(errId).classList.toggle('show', !ok);
+      if (!ok) valid = false;
+    });
+
+    const alertEl = document.getElementById('signupAlert');
+    alertEl.className = 'auth-alert';
+
+    if (!valid) return;
+
+    const users = getUsers();
+    if (users[email]) {
+      alertEl.textContent = 'An account with this email already exists. Please sign in.';
+      alertEl.className = 'auth-alert error';
+      return;
+    }
+
+    users[email] = { name, phone, email, password: btoa(pass), address, createdAt: Date.now() };
+    saveUsers(users);
+    setCurrentUser({ name, phone, email, address });
+    onLogin();
+  }
+
+  // ─── LOGIN ───
+  function doLogin() {
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const pass  = document.getElementById('loginPassword').value;
+    let valid = true;
+
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    document.getElementById('loginEmail').classList.toggle('error', !emailOk);
+    document.getElementById('loginEmailErr').classList.toggle('show', !emailOk);
+    if (!emailOk) valid = false;
+
+    const passOk = pass.length > 0;
+    document.getElementById('loginPassword').classList.toggle('error', !passOk);
+    document.getElementById('loginPassErr').classList.toggle('show', !passOk);
+    if (!passOk) valid = false;
+
+    const alertEl = document.getElementById('loginAlert');
+    alertEl.className = 'auth-alert';
+
+    if (!valid) return;
+
+    const users = getUsers();
+    const user = users[email];
+    if (!user || user.password !== btoa(pass)) {
+      alertEl.textContent = 'Incorrect email or password. Please try again.';
+      alertEl.className = 'auth-alert error';
+      return;
+    }
+
+    setCurrentUser({ name: user.name, phone: user.phone, email: user.email, address: user.address });
+    onLogin();
+  }
+
+  // ─── ON LOGIN ───
+  function onLogin() {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    document.getElementById('authGate').classList.remove('show');
+    document.getElementById('navbar').style.display = 'flex';
+    document.getElementById('welcomeBanner').classList.add('show');
+    document.getElementById('welcomeName').textContent = user.name.split(' ')[0];
+
+    document.getElementById('navAvatar').textContent = user.name.charAt(0).toUpperCase();
+    document.getElementById('navUserName').textContent = user.name.split(' ')[0];
+    document.getElementById('dropdownName').textContent = user.name;
+    document.getElementById('dropdownEmail').textContent = user.email;
+
+    // Pre-fill modal fields
+    document.getElementById('custName').value    = user.name;
+    document.getElementById('custPhone').value   = user.phone || '';
+    document.getElementById('custAddress').value = user.address || '';
+
+    // Add navbar padding to body
+    document.body.style.paddingTop = '64px';
+
+    setTimeout(() => {
+      document.getElementById('welcomeBanner').classList.remove('show');
+    }, 4000);
+  }
+
+  // ─── LOGOUT ───
+  function doLogout() {
+    clearCurrentUser();
+    document.getElementById('navbar').style.display = 'none';
+    document.getElementById('navDropdown').classList.remove('open');
+    document.getElementById('authGate').classList.add('show');
+    document.getElementById('welcomeBanner').classList.remove('show');
+    document.body.style.paddingTop = '0';
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('loginAlert').className = 'auth-alert';
+    switchAuthTab('login');
+  }
+
+  // ─── ORDER HISTORY ───
+  function openOrderHistory() {
+    document.getElementById('navDropdown').classList.remove('open');
+    const user = getCurrentUser();
+    if (!user) return;
+    const orders = getUserOrders(user.email);
+    const container = document.getElementById('historyContent');
+    if (orders.length === 0) {
+      container.innerHTML = '<div class="history-empty">No orders yet. Start browsing the menu! 🍛</div>';
+    } else {
+      container.innerHTML = orders.map(o => `
+        <div class="history-order-item">
+          <div class="history-order-meta">
+            <span class="history-order-date">${new Date(o.date).toLocaleDateString('en-NG', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}</span>
+            <span class="history-order-total">₦${o.total.toLocaleString()}</span>
+          </div>
+          <div class="history-order-lines">${o.items.map(i => `• ${i.name} ×${i.qty}`).join('<br>')}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;">📍 ${o.address}</div>
+        </div>
+      `).join('');
+    }
+    document.getElementById('historyModal').classList.add('open');
+  }
+  function closeHistoryModal() { document.getElementById('historyModal').classList.remove('open'); }
+
+  // ─── PROFILE EDIT ───
+  function openProfileEdit() {
+    document.getElementById('navDropdown').classList.remove('open');
+    const user = getCurrentUser();
+    if (!user) return;
+    document.getElementById('editName').value    = user.name;
+    document.getElementById('editPhone').value   = user.phone || '';
+    document.getElementById('editAddress').value = user.address || '';
+    document.getElementById('profileAlert').className = 'auth-alert';
+    document.getElementById('profileModal').classList.add('open');
+  }
+  function closeProfileModal() { document.getElementById('profileModal').classList.remove('open'); }
+  function saveProfile() {
+    const user = getCurrentUser();
+    if (!user) return;
+    const name    = document.getElementById('editName').value.trim();
+    const phone   = document.getElementById('editPhone').value.trim();
+    const address = document.getElementById('editAddress').value.trim();
+    if (!name) {
+      const a = document.getElementById('profileAlert');
+      a.textContent = 'Name cannot be empty.';
+      a.className = 'auth-alert error';
+      return;
+    }
+    const updated = { ...user, name, phone, address };
+    setCurrentUser(updated);
+    // Update users store
+    const users = getUsers();
+    if (users[user.email]) {
+      users[user.email] = { ...users[user.email], name, phone, address };
+      saveUsers(users);
+    }
+    document.getElementById('navAvatar').textContent  = name.charAt(0).toUpperCase();
+    document.getElementById('navUserName').textContent = name.split(' ')[0];
+    document.getElementById('dropdownName').textContent = name;
+    document.getElementById('custName').value    = name;
+    document.getElementById('custPhone').value   = phone;
+    document.getElementById('custAddress').value = address;
+
+    const a = document.getElementById('profileAlert');
+    a.textContent = '✓ Profile updated successfully!';
+    a.className = 'auth-alert success';
+    setTimeout(closeProfileModal, 1200);
+  }
+
+  // ─── CART ───
+  const orderBar   = document.getElementById('orderBar');
+  const orderCount = document.getElementById('orderCount');
+  const orderTotal = document.getElementById('orderTotal');
+  const modal      = document.getElementById('orderModal');
+
+  function updateBar() {
+    const items = Object.values(cart);
+    const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+    const count = items.reduce((s, i) => s + i.qty, 0);
+    if (count === 0) { orderBar.classList.remove('visible'); }
+    else {
+      orderBar.classList.add('visible');
+      orderCount.textContent = count + (count === 1 ? ' item selected' : ' items selected');
+      orderTotal.textContent = total.toLocaleString();
+    }
+  }
+
+  function openOrderModal() {
+    const items = Object.values(cart);
+    if (items.length === 0) return;
+    const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+    const preview = document.getElementById('orderPreview');
+    preview.innerHTML = items.map(i => `<p>• ${i.name} ×${i.qty} — ₦${(i.price * i.qty).toLocaleString()}</p>`).join('') + `<p class="preview-total">Total: ₦${total.toLocaleString()}</p>`;
+    modal.classList.add('open');
+  }
+
+  function closeOrderModal() {
+    modal.classList.remove('open');
+    ['nameErr','phoneErr','addressErr'].forEach(id => document.getElementById(id).style.display = 'none');
+    ['custName','custPhone','custAddress'].forEach(id => document.getElementById(id).classList.remove('error'));
+  }
+  modal.addEventListener('click', e => { if (e.target === modal) closeOrderModal(); });
+
+  // ─── BANK TRANSFER ───
+  function showBankTransfer() {
+    const name    = document.getElementById('custName').value.trim();
+    const phone   = document.getElementById('custPhone').value.trim();
+    const address = document.getElementById('custAddress').value.trim();
+    let valid = true;
+
+    if (!name)   { document.getElementById('nameErr').style.display='block';    document.getElementById('custName').classList.add('error');    valid=false; }
+    else         { document.getElementById('nameErr').style.display='none';     document.getElementById('custName').classList.remove('error'); }
+    if (!phone || phone.length < 7) { document.getElementById('phoneErr').style.display='block'; document.getElementById('custPhone').classList.add('error'); valid=false; }
+    else         { document.getElementById('phoneErr').style.display='none';    document.getElementById('custPhone').classList.remove('error'); }
+    if (!address){ document.getElementById('addressErr').style.display='block'; document.getElementById('custAddress').classList.add('error'); valid=false; }
+    else         { document.getElementById('addressErr').style.display='none';  document.getElementById('custAddress').classList.remove('error'); }
+
+    if (!valid) return;
+
+    const items = Object.values(cart);
+    const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+    document.getElementById('bankTotalLine').textContent = 'Transfer: ₦' + total.toLocaleString();
+
+    document.getElementById('orderModal').classList.remove('open');
+    document.getElementById('bankModal').classList.add('open');
+  }
+
+  function closeBankModal() {
+    document.getElementById('bankModal').classList.remove('open');
+  }
+
+  function copyAccountNumber() {
+    navigator.clipboard.writeText('9123264034').then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
+    }).catch(() => {
+      // Fallback for older browsers
+      const el = document.createElement('textarea');
+      el.value = '9123264034';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
+    });
+  }
+
+  function confirmTransferOrder() {
+    const name    = document.getElementById('custName').value.trim();
+    const phone   = document.getElementById('custPhone').value.trim();
+    const address = document.getElementById('custAddress').value.trim();
+    const items   = Object.values(cart);
+    const total   = items.reduce((s, i) => s + i.price * i.qty, 0);
+    const lines   = items.map(i => `• ${i.name} x${i.qty} = ₦${(i.price * i.qty).toLocaleString()}`);
+
+    const user = getCurrentUser();
+    if (user) {
+      saveUserOrder(user.email, {
+        date: Date.now(),
+        items: items.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+        total, address, name, phone,
+        paymentMethod: 'Bank Transfer'
+      });
+    }
+
+    const msg =
+`Hello Soul & Spice! 👋
+
+💳 *BANK TRANSFER ORDER*
+
+${lines.join('\n')}
+
+*Total: ₦${total.toLocaleString()}*
+_(Transferred to OPay — 9123264034)_
+
+---
+👤 Name: ${name}
+📞 Phone: ${phone}
+📍 Address: ${address}
+
+I have made the transfer. Please find attached my payment receipt. Kindly confirm and prepare my order. Thank you!`;
+
+    closeBankModal();
+    Object.keys(cart).forEach(k => {
+      delete cart[k];
+      const el = document.querySelector(`.menu-item[data-id="${k}"]`);
+      if (el) { el.classList.remove('selected'); el.querySelector('.qty-num').textContent = '1'; }
+    });
+    updateBar();
+    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
+  // Close bank modal on overlay click
+  document.getElementById('bankModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('bankModal')) closeBankModal();
+  });
+
+  function confirmOrder() {
+    const name    = document.getElementById('custName').value.trim();
+    const phone   = document.getElementById('custPhone').value.trim();
+    const address = document.getElementById('custAddress').value.trim();
+    let valid = true;
+
+    if (!name) { document.getElementById('nameErr').style.display='block'; document.getElementById('custName').classList.add('error'); valid=false; }
+    else { document.getElementById('nameErr').style.display='none'; document.getElementById('custName').classList.remove('error'); }
+    if (!phone || phone.length < 7) { document.getElementById('phoneErr').style.display='block'; document.getElementById('custPhone').classList.add('error'); valid=false; }
+    else { document.getElementById('phoneErr').style.display='none'; document.getElementById('custPhone').classList.remove('error'); }
+    if (!address) { document.getElementById('addressErr').style.display='block'; document.getElementById('custAddress').classList.add('error'); valid=false; }
+    else { document.getElementById('addressErr').style.display='none'; document.getElementById('custAddress').classList.remove('error'); }
+
+    if (!valid) return;
+
+    const items = Object.values(cart);
+    const total = items.reduce((s, i) => s + i.price * i.qty, 0);
+    const lines = items.map(i => `• ${i.name} x${i.qty} = ₦${(i.price * i.qty).toLocaleString()}`);
+
+    // Save order to history
+    const user = getCurrentUser();
+    if (user) {
+      saveUserOrder(user.email, {
+        date: Date.now(),
+        items: items.map(i => ({ name: i.name, qty: i.qty, price: i.price })),
+        total,
+        address,
+        name,
+        phone
+      });
+    }
+
+    const msg =
+`Hello Soul & Spice! 👋
+
+I'd like to place an order:
+
+${lines.join('\n')}
+
+*Total: ₦${total.toLocaleString()}*
+
+---
+👤 Name: ${name}
+📞 Phone: ${phone}
+📍 Address: ${address}
+
+Please confirm availability. Thank you!`;
+
+    window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent(msg)}`, '_blank');
+    closeOrderModal();
+  }
+
+  document.querySelectorAll('.menu-item').forEach(item => {
+    const id    = item.dataset.id;
+    const name  = item.dataset.name;
+    const price = parseInt(item.dataset.price);
+    const qtyEl = item.querySelector('.qty-num');
+    const minus = item.querySelector('.qty-btn.minus');
+    const plus  = item.querySelector('.qty-btn.plus');
+
+    item.addEventListener('click', e => {
+      if (e.target.closest('.qty-btn')) return;
+      if (item.classList.contains('selected')) {
+        item.classList.remove('selected');
+        delete cart[id];
+      } else {
+        item.classList.add('selected');
+        cart[id] = { name, price, qty: 1 };
+        qtyEl.textContent = '1';
+      }
+      updateBar();
+    });
+
+    minus.addEventListener('click', e => {
+      e.stopPropagation();
+      const q = parseInt(qtyEl.textContent);
+      if (q <= 1) { item.classList.remove('selected'); delete cart[id]; }
+      else { cart[id].qty = q - 1; qtyEl.textContent = q - 1; }
+      updateBar();
+    });
+
+    plus.addEventListener('click', e => {
+      e.stopPropagation();
+      const q = parseInt(qtyEl.textContent);
+      if (!cart[id]) { cart[id] = { name, price, qty: 1 }; item.classList.add('selected'); }
+      cart[id].qty = q + 1;
+      qtyEl.textContent = q + 1;
+      updateBar();
+    });
+  });
+
+  // Close history/profile modals on overlay click
+  document.getElementById('historyModal').addEventListener('click', e => { if (e.target === document.getElementById('historyModal')) closeHistoryModal(); });
+  document.getElementById('profileModal').addEventListener('click', e => { if (e.target === document.getElementById('profileModal')) closeProfileModal(); });
+
+  // ─── SHOW SITE ON LOAD ───
+  (function() {
+    document.getElementById('navbar').style.display = 'flex';
+    document.body.style.paddingTop = '64px';
+  })();
+</script>
+</body>
+</html>
